@@ -1,0 +1,2 @@
+class NhlTeam < ApplicationRecord
+end

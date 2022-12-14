@@ -1,0 +1,2 @@
+class NhlTeamsController < ApplicationController
+end

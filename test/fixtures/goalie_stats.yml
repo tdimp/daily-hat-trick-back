@@ -1,0 +1,35 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  season_id: 1
+  player_id: one
+  time_on_ice: MyString
+  ot: 1
+  shutouts: 1
+  wins: 1
+  losses: 1
+  saves: 1
+  save_percentage: 1.5
+  goals_against_average: 1.5
+  games: 1
+  games_started: 1
+  shots_against: 1
+  goals_against: 1
+  time_on_ice_per_game: MyString
+
+two:
+  season_id: 1
+  player_id: two
+  time_on_ice: MyString
+  ot: 1
+  shutouts: 1
+  wins: 1
+  losses: 1
+  saves: 1
+  save_percentage: 1.5
+  goals_against_average: 1.5
+  games: 1
+  games_started: 1
+  shots_against: 1
+  goals_against: 1
+  time_on_ice_per_game: MyString

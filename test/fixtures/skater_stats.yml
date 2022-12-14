@@ -1,0 +1,53 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  season_id: 1
+  player_id: one
+  time_on_ice: MyString
+  assists: 1
+  goals: 1
+  pim: 1
+  shots: 1
+  games: 1
+  hits: 1
+  power_play_goals: 1
+  power_play_points: 1
+  power_play_time_on_ice: MyString
+  faceoff_pct: 1.5
+  shot_pct: 1.5
+  game_winning_goals: 1
+  short_handed_goals: 1
+  short_handed_points: 1
+  blocked: 1
+  plus_minus: 1
+  points: 1
+  time_on_ice_per_game: MyString
+  even_time_on_ice_per_game: MyString
+  short_handed_time_on_ice_per_game: MyString
+  power_play_time_on_ice: MyString
+
+two:
+  season_id: 1
+  player_id: two
+  time_on_ice: MyString
+  assists: 1
+  goals: 1
+  pim: 1
+  shots: 1
+  games: 1
+  hits: 1
+  power_play_goals: 1
+  power_play_points: 1
+  power_play_time_on_ice: MyString
+  faceoff_pct: 1.5
+  shot_pct: 1.5
+  game_winning_goals: 1
+  short_handed_goals: 1
+  short_handed_points: 1
+  blocked: 1
+  plus_minus: 1
+  points: 1
+  time_on_ice_per_game: MyString
+  even_time_on_ice_per_game: MyString
+  short_handed_time_on_ice_per_game: MyString
+  power_play_time_on_ice: MyString
