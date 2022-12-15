@@ -22,11 +22,11 @@ def get_nhl_teams
     response = RestClient.get("#{api_key}/teams/#{t["id"]}?expand=team.roster")
     parsed_response = JSON.parse(response)
     players = parsed_response["teams"][0]["roster"]["roster"]
+    puts "Seeding roster data for #{t["name"]}..."
    
     players.each do |p|
-      pp p # This works
       Player.create(
-        id: p["person"]["id"], # This doesn't -> 'undefined method [] for nilClass'
+        id: p["person"]["id"],
         name: p["person"]["fullName"],
         position: p["position"]["abbreviation"],
         jersey_number: p["jerseyNumber"],
@@ -38,5 +38,5 @@ def get_nhl_teams
   
 end
 
+puts "Seeding NHL Team Data..."
 get_nhl_teams()
-puts "Seeding NHL Team Data"
