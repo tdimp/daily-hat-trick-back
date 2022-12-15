@@ -1,4 +1,4 @@
 class TeamPlayer < ApplicationRecord
-  belongs_to :team_id
-  belongs_to :player_id
+  belongs_to :team
+  belongs_to :player
 end

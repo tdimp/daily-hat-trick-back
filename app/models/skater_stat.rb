@@ -1,3 +1,3 @@
 class SkaterStat < ApplicationRecord
-  belongs_to :player_id
+  belongs_to :player
 end
