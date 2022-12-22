@@ -8,6 +8,7 @@ def api_key
 end
 
 def get_nhl_teams
+  current_season = "20222023"
   response = RestClient.get("#{api_key}/teams")
   parsed_response = JSON.parse(response)
   teams_array = parsed_response["teams"]
@@ -25,6 +26,9 @@ def get_nhl_teams
     puts "Seeding roster data for #{t["name"]}..."
    
     players.each do |p|
+      response = RestClient.get("#{api_key}/people/#{p["person"]["id"]}/stats?stats=statsSingleSeason&season=#{current_season}")
+      parsed_response = JSON.parse(response)
+      #p parsed_response["stats"][0]["splits"][0] != nil ? parsed_response["stats"][0]["splits"][0]["stat"] : "No stats found for #{p["person"]["fullName"]}"
       Player.create(
         id: p["person"]["id"],
         name: p["person"]["fullName"],
@@ -32,6 +36,21 @@ def get_nhl_teams
         jersey_number: p["jerseyNumber"],
         nhl_team_id: t["id"]
       )
+      if parsed_response["stats"][0]["splits"][0] == nil 
+        p "Player does not have stats for the current season"
+      elsif p["position"]["abbreviation"] == "G" 
+        GoalieStat.create(
+          player_id: p["person"]["id"],
+          time_on_ice: parsed_response["stats"][0]["splits"][0]["stat"]["timeOnIce"],
+          # TODO: Rest of stats data
+        )
+      else
+        SkaterStat.create(
+          player_id: p["person"]["id"],
+          time_on_ice: parsed_response["stats"][0]["splits"][0]["stat"]["timeOnIce"],
+          # TODO: Rest of stats data
+        )
+      end
     end
   end
 
