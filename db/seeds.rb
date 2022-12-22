@@ -8,7 +8,6 @@ def api_key
 end
 
 def get_nhl_teams
-  current_season = "20222023"
   response = RestClient.get("#{api_key}/teams")
   parsed_response = JSON.parse(response)
   teams_array = parsed_response["teams"]
@@ -26,9 +25,6 @@ def get_nhl_teams
     puts "Seeding roster data for #{t["name"]}..."
    
     players.each do |p|
-      response = RestClient.get("#{api_key}/people/#{p["person"]["id"]}/stats?stats=statsSingleSeason&season=#{current_season}")
-      parsed_response = JSON.parse(response)
-      #p parsed_response["stats"][0]["splits"][0] != nil ? parsed_response["stats"][0]["splits"][0]["stat"] : "No stats found for #{p["person"]["fullName"]}"
       Player.create(
         id: p["person"]["id"],
         name: p["person"]["fullName"],
@@ -36,26 +32,71 @@ def get_nhl_teams
         jersey_number: p["jerseyNumber"],
         nhl_team_id: t["id"]
       )
-      if parsed_response["stats"][0]["splits"][0] == nil 
-        p "Player does not have stats for the current season"
-      elsif p["position"]["abbreviation"] == "G" 
-        GoalieStat.create(
-          player_id: p["person"]["id"],
-          time_on_ice: parsed_response["stats"][0]["splits"][0]["stat"]["timeOnIce"],
-          # TODO: Rest of stats data
-        )
-      else
-        SkaterStat.create(
-          player_id: p["person"]["id"],
-          time_on_ice: parsed_response["stats"][0]["splits"][0]["stat"]["timeOnIce"],
-          # TODO: Rest of stats data
-        )
-      end
     end
   end
-
-  
 end
 
-puts "Seeding NHL Team Data..."
+def get_player_stats
+  current_season = "20222023"
+  players = Player.all
+  players.each do |p|
+    response = RestClient.get("#{api_key}/people/#{p.id}/stats?stats=statsSingleSeason&season=#{current_season}")
+    parsed_response = JSON.parse(response)
+    #p parsed_response["stats"][0]["splits"][0] != nil ? parsed_response["stats"][0]["splits"][0]["stat"] : "No stats found for #{p["person"]["fullName"]}"
+    if parsed_response["stats"][0]["splits"][0] == nil 
+      p "#{p.name} does not have stats for the current season"
+    elsif p.position == "G"
+      player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
+      GoalieStat.create(
+        player_id: p.id,
+        time_on_ice: player_stat["timeOnIce"],
+        ot: player_stat["ot"],
+        shutouts: player_stat["shutouts"],
+        wins: player_stat["wins"],
+        losses: player_stat["losses"],
+        saves: player_stat["saves"],
+        save_percentage: player_stat["savePercentage"],
+        goals_against_average: player_stat["goalAgainstAverage"],
+        games: player_stat["games"],
+        games_started: player_stat["gamesStarted"],
+        shots_against: player_stat["shotsAgainst"],
+        goals_against: player_stat["goalsAgainst"],
+        time_on_ice_per_game: player_stat["timeOnIcePerGame"],
+      )
+    else
+      player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
+      SkaterStat.create(
+        player_id: p.id,
+        time_on_ice: player_stat["timeOnIce"],
+        assists: player_stat["assists"],
+        goals: player_stat["goals"],
+        pim: player_stat["pim"],
+        shots: player_stat["shots"],
+        games: player_stat["games"],
+        hits: player_stat["hits"],
+        power_play_goals: player_stat["powerPlayGoals"],
+        power_play_points: player_stat["powerPlayPoints"],
+        power_play_time_on_ice: player_stat["powerPlayTimeOnIce"],
+        faceoff_pct: player_stat["faceOffPct"],
+        shot_pct: player_stat["shotPct"],
+        game_winning_goals: player_stat["gameWinningGoals"],
+        short_handed_goals: player_stat["shortHandedGoals"],
+        short_handed_points: player_stat["shortHandedPoints"],
+        blocked: player_stat["blocked"],
+        plus_minus: player_stat["plusMinus"],
+        points: player_stat["points"],
+        time_on_ice_per_game: player_stat["timeOnIcePerGame"],
+        even_time_on_ice_per_game: player_stat["evenTimeOnIcePerGame"],
+        short_handed_time_on_ice_per_game: player_stat["shortHandedTimeOnIcePerGame"],
+        power_play_time_on_ice_per_game: player_stat["powerPlayTimeOnIcePerGame"],
+      )
+    end
+
+  end
+end
+
+puts "Seeding NHL Team and Roster Data..."
 get_nhl_teams()
+
+puts "Seeding Player Stats..."
+get_player_stats()
