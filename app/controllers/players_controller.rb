@@ -1,4 +1,5 @@
 class PlayersController < ApplicationController
+  skip_before_action :authorize # Users do not need to be logged in to see Player data.
 
   def index
     render json: Player.all
