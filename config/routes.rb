@@ -7,4 +7,6 @@ Rails.application.routes.draw do
   post '/login', to: 'sessions#create'
   get '/auth', to: 'users#show'
   delete '/logout', to: 'sessions#destroy'
+
+  get '/players/:player_id/stats', to: 'players#stats'
 end
