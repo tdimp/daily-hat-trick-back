@@ -6,12 +6,11 @@ class Player < ApplicationRecord
   has_many :goalie_stats
   has_many :skater_stats
 
-  def stats
-    player = Player.find_by(id: params[:id])
-    if player.position != "G"
-      return player.skater_stats
-    elsif player.position == "G"
-      return player.goalie_stats
+  def self.stats
+    if self.position != "G"
+      return serialize :self.skater_stats
+    elsif self.position == "G"
+      return self.goalie_stats
     else
       return "Player has no stats"
     end

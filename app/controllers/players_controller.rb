@@ -1,7 +1,7 @@
 class PlayersController < ApplicationController
 
   def index
-    render json: Player.all
+    render json: Player.all, methods: [:stats]
   end
 
   def show
