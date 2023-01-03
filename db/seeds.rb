@@ -100,3 +100,13 @@ get_nhl_teams()
 
 puts "Seeding Player Stats..."
 get_player_stats()
+
+user_1 = User.create(username: "testuser", password_digest: BCrypt::Password.create("password"), email: "testuser")
+
+team_1 = user_1.teams.create(name: "Test Team")
+
+players = Player.find(8471214, 8480012, 8477447, 8471685, 8475314, 8479314, 8477503, 8478469, 8478407, 8477986, 8477932, 8478873, 8474053, 8477330, 8471218, 8479973, 8475311, 8480280, 8478872)
+
+team_1.players << players
+
+puts "Done seeding!"
