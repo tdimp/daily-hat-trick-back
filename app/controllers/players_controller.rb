@@ -3,7 +3,7 @@ class PlayersController < ApplicationController
 
   def index
     page = params[:page]
-    @players = Player.order(created_at: :desc).limit(10).offset((page.to_i - 1) * 10)
+    @players = Player.order(created_at: :desc).limit(25).offset((page.to_i - 1) * 25)
     render json: @players
   end
 
