@@ -2,7 +2,9 @@ class PlayersController < ApplicationController
   skip_before_action :authorize # Users do not need to be logged in to see Player data.
 
   def index
-    render json: Player.all
+    page = params[:page]
+    @players = Player.order(created_at: :desc).limit(10).offset((page.to_i - 1) * 10)
+    render json: @players
   end
 
   def show
