@@ -27,7 +27,9 @@ def get_nhl_teams
     players.each do |p|
       Player.create(
         id: p["person"]["id"],
-        name: p["person"]["fullName"],
+        first_name: p["person"]["fullName"].split.first,
+        last_name: p["person"]["fullName"].split.last,
+        full_name: p["person"]["fullName"],
         position: p["position"]["abbreviation"],
         jersey_number: p["jerseyNumber"],
         nhl_team_id: t["id"]
@@ -44,7 +46,7 @@ def get_player_stats
     parsed_response = JSON.parse(response)
     #p parsed_response["stats"][0]["splits"][0] != nil ? parsed_response["stats"][0]["splits"][0]["stat"] : "No stats found for #{p["person"]["fullName"]}"
     if parsed_response["stats"][0]["splits"][0] == nil 
-      p "#{p.name} does not have stats for the current season"
+      p "#{p.full_name} does not have stats for the current season"
     elsif p.position == "G"
       player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
       GoalieStat.create(

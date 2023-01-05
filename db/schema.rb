@@ -44,7 +44,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
   end
 
   create_table "players", force: :cascade do |t|
-    t.string "name"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "full_name"
     t.integer "jersey_number"
     t.string "position"
     t.datetime "created_at", null: false
