@@ -19,7 +19,8 @@ class TeamsController < ApplicationController
 
   def update
     team = find_team
-    team.update!(team_params)
+    player = Player.find(params[:droppedId])
+    team.players.delete(player)
     render json: team
   end
 
