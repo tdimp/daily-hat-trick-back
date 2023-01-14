@@ -17,14 +17,14 @@ class TeamsController < ApplicationController
     render json: team
   end
 
-  def update
+  def update # Need to make this update team name only and add a different controller action for adding/removing players from team.
     team = find_team
     player = Player.find(params[:droppedId])
     team.players.delete(player)
     render json: team
   end
 
-  def delete
+  def destroy
     team = find_team
     team.destroy
     head :no_content
