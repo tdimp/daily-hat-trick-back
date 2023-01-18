@@ -3,7 +3,7 @@ class Player < ApplicationRecord
 
   has_many :team_players
   has_many :teams, through: :team_players
-  has_many :skater_stats
-  has_many :goalie_stats
+  has_one :skater_stat
+  has_one :goalie_stat
   
 end

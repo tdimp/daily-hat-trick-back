@@ -3,7 +3,7 @@ class PlayerSerializer < ActiveModel::Serializer
   
   belongs_to :nhl_team, serializer: NhlTeamSerializer
 
-  has_many :goalie_stats
-  has_many :skater_stats
+  has_one :skater_stat
+  has_one :goalie_stat
  
 end
