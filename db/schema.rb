@@ -25,6 +25,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
     t.integer "saves"
     t.float "save_percentage"
     t.float "goals_against_average"
+    t.float "power_play_save_percentage"
+    t.float "short_handed_save_percentage"
+    t.float "even_strength_save_percentage"
     t.integer "games"
     t.integer "games_started"
     t.integer "shots_against"
@@ -85,15 +88,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
     t.index ["player_id"], name: "index_skater_stats_on_player_id"
   end
 
-  create_table "team_players", force: :cascade do |t|
-    t.bigint "team_id", null: false
-    t.bigint "player_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["player_id"], name: "index_team_players_on_player_id"
-    t.index ["team_id"], name: "index_team_players_on_team_id"
-  end
-
   create_table "teams", force: :cascade do |t|
     t.string "name"
     t.bigint "user_id", null: false
@@ -113,7 +107,5 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
   add_foreign_key "goalie_stats", "players"
   add_foreign_key "players", "nhl_teams"
   add_foreign_key "skater_stats", "players"
-  add_foreign_key "team_players", "players"
-  add_foreign_key "team_players", "teams"
   add_foreign_key "teams", "users"
 end
