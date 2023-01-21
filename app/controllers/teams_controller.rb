@@ -2,13 +2,13 @@ class TeamsController < ApplicationController
 
   def index
     current_user = find_current_user
-    render json: current_user.teams
+    render json: current_user.teams, each_serializer: SimpleTeamSerializer # This serializer prevents nested player data from being serialized
   end
 
   def show
     current_user = find_current_user
     team = current_user.teams.find_by(id: params[:id])
-    render json: team.players
+    render json: team
   end
   
   def create
@@ -17,11 +17,24 @@ class TeamsController < ApplicationController
     render json: team
   end
 
-  def update # Need to make this update team name only and add a different controller action for adding/removing players from team.
+  def update
+    team = find_team
+    team.update(team_params)
+    render json: team
+  end
+
+  def drop_player # Need to make this add/remove players from team.
     team = find_team
     player = Player.find(params[:droppedId])
     team.players.delete(player)
     render json: team
+  end
+
+  def add_player
+    team = find_team
+    player = Player.find(params[:addedId])
+    team.players << player
+    render json: player
   end
 
   def destroy
