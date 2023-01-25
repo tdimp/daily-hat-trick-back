@@ -13,4 +13,11 @@ class PlayersController < ApplicationController
     player = Player.find_by(id: params[:id])
     render json: player
   end
+
+  def search
+    players = Player.all.filter do |p|
+      p.full_name.downcase.include? params[:query].downcase
+    end
+    render json: players.first(25)
+  end
 end
