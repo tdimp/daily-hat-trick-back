@@ -11,4 +11,5 @@ Rails.application.routes.draw do
   get '/players/:player_id/stats', to: 'players#stats'
   get '/players/page/:page', to: 'players#index'
   patch '/teams/:id/drop_player', to: 'teams#drop_player'
+  patch '/teams/:id/add_player', to: 'teams#add_player'
 end
