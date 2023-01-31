@@ -1,5 +1,5 @@
 class NhlTeamSerializer < ActiveModel::Serializer
-  attributes :name
+  attributes :id, :name
 
   has_many :players
 end
