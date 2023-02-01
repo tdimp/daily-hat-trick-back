@@ -36,3 +36,5 @@ gem "bcrypt", "~> 3.1"
 gem "rest-client"
 
 gem "dotenv-rails"
+
+gem "rufus-scheduler"

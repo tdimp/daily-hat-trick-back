@@ -19,7 +19,13 @@ def get_nhl_teams
       location_name: t["locationName"],
       team_name: t["teamName"]
     )
-    response = RestClient.get("#{api_key}/teams/#{t["id"]}?expand=team.roster")
+  end
+end
+
+def get_nhl_rosters
+  nhl_teams = NhlTeam.all
+  nhl_teams.each do |t|
+    response = RestClient.get("#{api_key}/teams/#{t.id}?expand=team.roster")
     parsed_response = JSON.parse(response)
     players = parsed_response["teams"][0]["roster"]["roster"]
     puts "Seeding roster data for #{t["name"]}..."
@@ -39,6 +45,7 @@ def get_nhl_teams
 end
 
 def get_player_stats
+  p Time.now
   current_season = "20222023"
   players = Player.all
   players.each do |p|
@@ -98,10 +105,14 @@ def get_player_stats
     end
 
   end
+  p Time.now
 end
 
-puts "Seeding NHL Team and Roster Data..."
+puts "Seeding NHL Team Data..."
 get_nhl_teams()
+
+puts "Seeding NHL Roster Data..."
+get_nhl_rosters()
 
 puts "Seeding Player Stats..."
 get_player_stats()
