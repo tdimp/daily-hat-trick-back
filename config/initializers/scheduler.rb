@@ -2,7 +2,7 @@ require 'rest-client'
 
 s = Rufus::Scheduler.singleton
 
-s.every '1m' do
+s.every '6h' do
   response = RestClient.get('https://statsapi.web.nhl.com/api/v1/schedule')
   parsed_response = JSON.parse(response)
   games_today = parsed_response['totalItems']
