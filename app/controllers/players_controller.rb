@@ -10,7 +10,7 @@ class PlayersController < ApplicationController
   end
 
   def show
-    player = Player.find_by(id: params[:id])
+    player = Player.find(params[:id])
     render json: player
   end
 

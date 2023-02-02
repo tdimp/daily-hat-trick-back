@@ -7,7 +7,7 @@ class TeamsController < ApplicationController
 
   def show
     current_user = find_current_user
-    team = current_user.teams.find_by(id: params[:id])
+    team = current_user.teams.find(params[:id])
     render json: team
   end
   

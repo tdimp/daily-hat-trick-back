@@ -5,7 +5,7 @@ class NhlTeamsController < ApplicationController
   end
 
   def show
-    team = NhlTeam.find_by(id: params[:id])
+    team = NhlTeam.find(params[:id])
     render json: team
   end
 end
