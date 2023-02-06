@@ -2,6 +2,28 @@ require 'rest-client'
 
 s = Rufus::Scheduler.singleton
 
+s.every '12h' do
+  nhl_teams = NhlTeam.all
+  nhl_teams.each do |t|
+    response = RestClient.get("#{api_key}/teams/#{t.id}?expand=team.roster")
+    parsed_response = JSON.parse(response)
+    players = parsed_response["teams"][0]["roster"]["roster"]
+    puts "Seeding roster data for #{t["name"]}..."
+   
+    players.each do |p|
+      Player.find_or_create_by(player_id: p.id).update(
+        id: p["person"]["id"],
+        first_name: p["person"]["fullName"].split.first,
+        last_name: p["person"]["fullName"].split.last,
+        full_name: p["person"]["fullName"],
+        position: p["position"]["abbreviation"],
+        jersey_number: p["jerseyNumber"],
+        nhl_team_id: t["id"]
+      )
+    end
+  end
+end
+
 s.every '6h' do
   response = RestClient.get('https://statsapi.web.nhl.com/api/v1/schedule')
   parsed_response = JSON.parse(response)
@@ -27,7 +49,7 @@ s.every '6h' do
           p "#{p.full_name} does not have stats for the current season"
         elsif p.position == "G"
           player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
-          GoalieStat.find_by(player_id: p.id).update(
+          GoalieStat.find_or_create_by(player_id: p.id).update(
             player_id: p.id,
             time_on_ice: player_stat["timeOnIce"],
             ot: player_stat["ot"],
