@@ -5,20 +5,20 @@ s = Rufus::Scheduler.singleton
 s.every '12h' do
   nhl_teams = NhlTeam.all
   nhl_teams.each do |t|
-    response = RestClient.get("#{api_key}/teams/#{t.id}?expand=team.roster")
+    response = RestClient.get("https://statsapi.web.nhl.com/api/v1/teams/#{t.id}?expand=team.roster")
     parsed_response = JSON.parse(response)
     players = parsed_response["teams"][0]["roster"]["roster"]
     puts "Seeding roster data for #{t["name"]}..."
    
     players.each do |p|
-      Player.find_or_create_by(player_id: p.id).update(
+      Player.find_or_create_by(id: p["person"]["id"]).update(
         id: p["person"]["id"],
         first_name: p["person"]["fullName"].split.first,
         last_name: p["person"]["fullName"].split.last,
         full_name: p["person"]["fullName"],
         position: p["position"]["abbreviation"],
         jersey_number: p["jerseyNumber"],
-        nhl_team_id: t["id"]
+        nhl_team_id: t["id"],
       )
     end
   end
@@ -69,8 +69,8 @@ s.every '6h' do
             time_on_ice_per_game: player_stat["timeOnIcePerGame"],
           )
         else
-          player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
-          SkaterStat.find_by(player_id: p.id).update(
+          player_stat = parsed_response["stats"][0]["splits"][0]["stat"]
+          SkaterStat.find_or_create_by(player_id: p.id).update(
             player_id: p.id,
             time_on_ice: player_stat["timeOnIce"],
             assists: player_stat["assists"],
