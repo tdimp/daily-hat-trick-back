@@ -3,12 +3,14 @@
 
 require 'rest-client'
 
-def api_key
-  ENV['API_KEY']
-end
+# api_key uses dotenv gem to avoid pushing API keys to GitHub. It is not needed for this project since the NHL API
+# does not require an API key.
+# def api_key
+#   ENV['API_KEY']
+# end
 
 def get_nhl_teams
-  response = RestClient.get("#{api_key}/teams")
+  response = RestClient.get("https://statsapi.web.nhl.com/api/v1/teams")
   parsed_response = JSON.parse(response)
   teams_array = parsed_response["teams"]
 
@@ -25,7 +27,7 @@ end
 def get_nhl_rosters
   nhl_teams = NhlTeam.all
   nhl_teams.each do |t|
-    response = RestClient.get("#{api_key}/teams/#{t.id}?expand=team.roster")
+    response = RestClient.get("https://statsapi.web.nhl.com/api/v1/teams/#{t.id}?expand=team.roster")
     parsed_response = JSON.parse(response)
     players = parsed_response["teams"][0]["roster"]["roster"]
     puts "Seeding roster data for #{t["name"]}..."
@@ -49,7 +51,7 @@ def get_player_stats
   current_season = "20222023"
   players = Player.all
   players.each do |p|
-    response = RestClient.get("#{api_key}/people/#{p.id}/stats?stats=statsSingleSeason&season=#{current_season}")
+    response = RestClient.get("https://statsapi.web.nhl.com/api/v1/people/#{p.id}/stats?stats=statsSingleSeason&season=#{current_season}")
     parsed_response = JSON.parse(response)
     #p parsed_response["stats"][0]["splits"][0] != nil ? parsed_response["stats"][0]["splits"][0]["stat"] : "No stats found for #{p["person"]["fullName"]}"
     if parsed_response["stats"][0]["splits"][0] == nil 
