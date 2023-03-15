@@ -12,7 +12,7 @@ In the project directory, run
 
 Downloads and installs the app's dependencies.
 
-### `sudo service postgresql start`
+### `sudo service postgresql start (Linux) | brew services start postgresql@14 (Mac)`
 
 ### `rails db:create db:migrate db:seed`
 
