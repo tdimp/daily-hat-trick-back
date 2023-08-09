@@ -48,7 +48,7 @@ end
 
 def get_player_stats
   p Time.now
-  current_season = "20222023"
+  current_season = "20232024"
   players = Player.all
   players.each do |p|
     response = RestClient.get("https://statsapi.web.nhl.com/api/v1/people/#{p.id}/stats?stats=statsSingleSeason&season=#{current_season}")
