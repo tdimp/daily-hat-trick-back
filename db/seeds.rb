@@ -123,7 +123,7 @@ user_1 = User.create(username: "testuser", password_digest: BCrypt::Password.cre
 
 team_1 = user_1.teams.create(name: "Test Team")
 
-players = Player.find(8471214, 8480012, 8477447, 8471685, 8475314, 8479314, 8477503, 8478469, 8478407, 8477986, 8477932, 8478873, 8474053, 8477330, 8471218, 8479973, 8475311, 8478872)
+players = Player.where('full_name': ['Auston Matthews', 'Ivan Barbashev', 'Ryan Nugent-Hopkins', 'Jamie Benn', 'Mitchell Marner', 'Adrian Kempe', 'Erik Karlsson', 'Hampus Lindholm', 'Kris Letang', 'Adam Larsson', 'Elias Lindholm', 'Zach Hyman', 'Viktor Arvidsson', 'Phillipp Grubauer', 'Vitek Vanecek', 'Stuart Skinner'])
 
 team_1.players << players
 
