@@ -9,6 +9,9 @@ require 'rest-client'
 #   ENV['API_KEY']
 # end
 
+# New NHL API docs here: https://gitlab.com/dword4/nhlapi/-/blob/master/new-api.md?ref_type=heads
+# TODO: rewrite seeds.rb to use new API endpoints.
+
 def get_nhl_teams
   response = RestClient.get("https://statsapi.web.nhl.com/api/v1/teams")
   parsed_response = JSON.parse(response)
