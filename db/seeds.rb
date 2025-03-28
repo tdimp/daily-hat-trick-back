@@ -12,37 +12,75 @@ require 'rest-client'
 # New NHL API docs here: https://gitlab.com/dword4/nhlapi/-/blob/master/new-api.md?ref_type=heads
 # TODO: rewrite seeds.rb to use new API endpoints.
 
-def get_nhl_teams
-  response = RestClient.get("https://statsapi.web.nhl.com/api/v1/teams")
+CURRENT_SEASON = "20242025"
+BASE_URL = "https://api.nhle.com/stats/rest/en"
+SPECIFIC_URL = "https://api-web.nhle.com/v1"
+NHL_TEAMS = [
+  "MTL",
+  "BUF",
+  "NYI",
+  "SJS",
+  "CBJ",
+  "PIT",
+  "FLA",
+  "CAR",
+  "VGK",
+  "DAL",
+  "WPG",
+  "TBL",
+  "UTA",
+  "NSH",
+  "NJD",
+  "OTT",
+  "COL",
+  "SEA",
+  "WSH",
+  "ANA",
+  "LAK",
+  "VAN",
+  "MIN",
+  "TOR",
+  "NYR",
+  "EDM",
+  "CGY",
+  "BOS",
+  "STL",
+  "CHI",
+  "DET",
+  "PHI"
+]
+
+def get_nhl_teams(base_url, nhl_teams)
+  response = RestClient.get(base_url)
   parsed_response = JSON.parse(response)
-  teams_array = parsed_response["teams"]
+  teams_array = parsed_response["data"]
 
   teams_array.each do |t|
-    NhlTeam.create(
-      id: t["id"],
-      name: t["name"],
-      location_name: t["locationName"],
-      team_name: t["teamName"]
-    )
+    if nhl_teams.include?(t["rawTricode"])
+      NhlTeam.create(
+        id: t["id"],
+        name: t["fullName"],
+        tricode: t["rawTricode"]
+      )
+    end
   end
 end
 
-def get_nhl_rosters
-  nhl_teams = NhlTeam.all
-  nhl_teams.each do |t|
-    response = RestClient.get("https://statsapi.web.nhl.com/api/v1/teams/#{t.id}?expand=team.roster")
+def get_nhl_rosters(base_url, current_season)
+  NhlTeam.all.each do |t|
+    response = RestClient.get("#{base_url}/roster/#{t['tricode']}/#{current_season}")
     parsed_response = JSON.parse(response)
-    players = parsed_response["teams"][0]["roster"]["roster"]
+    players = parsed_response["forwards"] + parsed_response["defensemen"] + parsed_response["goalies"]
     puts "Seeding roster data for #{t["name"]}..."
    
     players.each do |p|
       Player.create(
-        id: p["person"]["id"],
-        first_name: p["person"]["fullName"].split.first,
-        last_name: p["person"]["fullName"].split.last,
-        full_name: p["person"]["fullName"],
-        position: p["position"]["abbreviation"],
-        jersey_number: p["jerseyNumber"],
+        id: p["id"],
+        first_name: p["firstName"]["default"],
+        last_name: p["lastName"]["default"],
+        full_name: "#{p['firstName']} #{p['lastName']}",
+        position: p["positionCode"],
+        jersey_number: p["sweaterNumber"],
         nhl_team_id: t["id"]
       )
     end
@@ -51,7 +89,7 @@ end
 
 def get_player_stats
   p Time.now
-  current_season = "20232024"
+  current_season = CURRENT_SEASON
   players = Player.all
   players.each do |p|
     response = RestClient.get("https://statsapi.web.nhl.com/api/v1/people/#{p.id}/stats?stats=statsSingleSeason&season=#{current_season}")
@@ -114,20 +152,20 @@ def get_player_stats
 end
 
 puts "Seeding NHL Team Data..."
-get_nhl_teams()
+get_nhl_teams("https://api.nhle.com/stats/rest/en/team", NHL_TEAMS)
 
 puts "Seeding NHL Roster Data..."
-get_nhl_rosters()
+get_nhl_rosters(SPECIFIC_URL, CURRENT_SEASON)
 
-puts "Seeding Player Stats..."
-get_player_stats()
+# puts "Seeding Player Stats..."
+# get_player_stats()
 
-user_1 = User.create(username: "testuser", password_digest: BCrypt::Password.create("password"), email: "testuser")
+# user_1 = User.create(username: "testuser", password_digest: BCrypt::Password.create("password"), email: "testuser")
 
-team_1 = user_1.teams.create(name: "Test Team")
+# team_1 = user_1.teams.create(name: "Test Team")
 
-players = Player.where('full_name': ['Auston Matthews', 'Ivan Barbashev', 'Ryan Nugent-Hopkins', 'Jamie Benn', 'Mitchell Marner', 'Adrian Kempe', 'Erik Karlsson', 'Hampus Lindholm', 'Kris Letang', 'Adam Larsson', 'Elias Lindholm', 'Zach Hyman', 'Viktor Arvidsson', 'Phillipp Grubauer', 'Vitek Vanecek', 'Stuart Skinner'])
+# players = Player.where('full_name': ['Auston Matthews', 'Ivan Barbashev', 'Ryan Nugent-Hopkins', 'Jamie Benn', 'Mitchell Marner', 'Adrian Kempe', 'Erik Karlsson', 'Hampus Lindholm', 'Kris Letang', 'Adam Larsson', 'Elias Lindholm', 'Zach Hyman', 'Viktor Arvidsson', 'Phillipp Grubauer', 'Vitek Vanecek', 'Stuart Skinner'])
 
-team_1.players << players
+# team_1.players << players
 
 puts "Done seeding!"
