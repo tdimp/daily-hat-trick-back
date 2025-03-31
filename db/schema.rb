@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
+ActiveRecord::Schema[7.0].define(version: 2025_03_31_115122) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -32,7 +32,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
     t.integer "games_started"
     t.integer "shots_against"
     t.integer "goals_against"
-    t.string "time_on_ice_per_game"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_goalie_stats_on_player_id"
@@ -40,10 +39,10 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_14_182652) do
 
   create_table "nhl_teams", force: :cascade do |t|
     t.string "name"
-    t.string "location_name"
-    t.string "team_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "full_name"
+    t.string "tricode"
   end
 
   create_table "players", force: :cascade do |t|
