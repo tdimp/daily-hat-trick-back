@@ -105,13 +105,14 @@ def get_player_stats(base_url, current_season)
       time_on_ice_per_game: skater["timeOnIcePerGame"],
       shots: skater["shots"],
       game_winning_goals: skater["gameWinningGoals"],
-      shot_pct: skater["shotPct"],
-      faceoff_pct: skater["faceOffWinPct"],
+      shot_pct: skater["shootingPct"],
+      faceoff_pct: skater["faceoffWinPct"],
       games: skater["gamesPlayed"],
       pim: skater["penaltyMinutes"],
       power_play_goals: skater["ppGoals"],
       power_play_points: skater["ppPoints"],
       short_handed_points: skater["shPoints"],
+      short_handed_goals: skater["shGoals"],
     )
   end
 
