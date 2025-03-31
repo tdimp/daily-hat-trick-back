@@ -50,8 +50,9 @@ NHL_TEAMS = [
   "PHI"
 ]
 
+
 def get_nhl_teams(base_url, nhl_teams)
-  response = RestClient.get(base_url)
+  response = RestClient.get("#{base_url}/team")
   parsed_response = JSON.parse(response)
   teams_array = parsed_response["data"]
 
@@ -87,85 +88,110 @@ def get_nhl_rosters(base_url, current_season)
   end
 end
 
-def get_player_stats
+def get_player_stats(base_url, current_season)
   p Time.now
-  current_season = CURRENT_SEASON
-  players = Player.all
-  players.each do |p|
-    response = RestClient.get("https://statsapi.web.nhl.com/api/v1/people/#{p.id}/stats?stats=statsSingleSeason&season=#{current_season}")
-    parsed_response = JSON.parse(response)
-    #p parsed_response["stats"][0]["splits"][0] != nil ? parsed_response["stats"][0]["splits"][0]["stat"] : "No stats found for #{p["person"]["fullName"]}"
-    if parsed_response["stats"][0]["splits"][0] == nil 
-      p "#{p.full_name} does not have stats for the current season"
-    elsif p.position == "G"
-      player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
-      GoalieStat.create(
-        player_id: p.id,
-        time_on_ice: player_stat["timeOnIce"],
-        ot: player_stat["ot"],
-        shutouts: player_stat["shutouts"],
-        wins: player_stat["wins"],
-        losses: player_stat["losses"],
-        saves: player_stat["saves"],
-        save_percentage: player_stat["savePercentage"],
-        goals_against_average: player_stat["goalAgainstAverage"],
-        short_handed_save_percentage: player_stat["powerPlaySavePercentage"],
-        power_play_save_percentage: player_stat["shortHandedSavePercentage"],
-        even_strength_save_percentage: player_stat["evenStrengthSavePercentage"],
-        games: player_stat["games"],
-        games_started: player_stat["gamesStarted"],
-        shots_against: player_stat["shotsAgainst"],
-        goals_against: player_stat["goalsAgainst"],
-        time_on_ice_per_game: player_stat["timeOnIcePerGame"],
-      )
-    else
-      player_stat = parsed_response["stats"][0]["splits"][0]["stat"] 
-      SkaterStat.create(
-        player_id: p.id,
-        time_on_ice: player_stat["timeOnIce"],
-        assists: player_stat["assists"],
-        goals: player_stat["goals"],
-        pim: player_stat["pim"],
-        shots: player_stat["shots"],
-        games: player_stat["games"],
-        hits: player_stat["hits"],
-        power_play_goals: player_stat["powerPlayGoals"],
-        power_play_points: player_stat["powerPlayPoints"],
-        power_play_time_on_ice: player_stat["powerPlayTimeOnIce"],
-        faceoff_pct: player_stat["faceOffPct"],
-        shot_pct: player_stat["shotPct"],
-        game_winning_goals: player_stat["gameWinningGoals"],
-        short_handed_goals: player_stat["shortHandedGoals"],
-        short_handed_points: player_stat["shortHandedPoints"],
-        blocked: player_stat["blocked"],
-        plus_minus: player_stat["plusMinus"],
-        points: player_stat["points"],
-        time_on_ice_per_game: player_stat["timeOnIcePerGame"],
-        even_time_on_ice_per_game: player_stat["evenTimeOnIcePerGame"],
-        short_handed_time_on_ice_per_game: player_stat["shortHandedTimeOnIcePerGame"],
-        power_play_time_on_ice_per_game: player_stat["powerPlayTimeOnIcePerGame"],
-      )
-    end
+  # summary endpoint
+  response = RestClient.get("#{base_url}/skater/summary?limit=-1&cayenneExp=seasonId=#{current_season}%20and%20gameTypeId=2")
+  parsed_response = JSON.parse(response)
+  skaters = parsed_response["data"]
 
+  skaters.each do |skater|
+    SkaterStat.create(
+      player_id: skater["playerId"],
+      goals: skater["goals"],
+      assists: skater["assists"],
+      points: skater["points"],
+      plus_minus: skater["plusMinus"],
+      time_on_ice_per_game: skater["timeOnIcePerGame"],
+      shots: skater["shots"],
+      game_winning_goals: skater["gameWinningGoals"],
+      shot_pct: skater["shotPct"],
+      faceoff_pct: skater["faceOffPct"],
+      games: skater["games"],
+      pim: skater["penaltyMinutes"],
+      power_play_goals: skater["powerPlayGoals"],
+      short_handed_points: skater["shortHandedPoints"],
+    )
   end
+
+  # scoringpergame endpoint
+  response = RestClient.get("#{base_url}/skater/scoringpergame?limit=-1&cayenneExp=seasonId=#{current_season}%20and%20gameTypeId=2")
+  parsed_response = JSON.parse(response)
+  skaters = parsed_response["data"]
+
+  skaters.each do |skater|
+    SkaterStat.find_or_create_by(player_id: skater["playerId"]).update(
+      hits: skater["hits"],
+      blocked: skater["blockedShots"]
+    )
+  end
+
+  # timeonice endpoint
+   response = RestClient.get("#{base_url}/skater/timeonice?limit=-1&cayenneExp=seasonId=#{current_season}%20and%20gameTypeId=2")
+   parsed_response = JSON.parse(response)
+   skaters = parsed_response["data"]
+ 
+   skaters.each do |skater|
+     SkaterStat.find_or_create_by(player_id: skater["playerId"]).update(
+       time_on_ice: skater["timeOnIce"],
+       power_play_time_on_ice: skater["ppTimeOnIce"],
+       even_time_on_ice_per_game: skater["evTimeOnIcePerGame"],
+       short_handed_time_on_ice_per_game: skater["shTimeOnIcePerGame"],
+       power_play_time_on_ice_per_game: skater["ppTimeOnIcePerGame"]
+     )
+   end
+  
+   response = RestClient.get("#{base_url}/goalie/summary?limit=-1&cayenneExp=seasonId=#{current_season}%20and%20gameTypeId=2")
+   parsed_response = JSON.parse(response)
+   goalies = parsed_response["data"]
+ 
+   goalies.each do |goalie|
+     GoalieStat.create(
+       player_id: goalie["playerId"],
+       ot: goalie["otLosses"],
+       shutouts: goalie["shutouts"],
+       wins: goalie["wins"],
+       losses: goalie["losses"],
+       saves: goalie["saves"],
+       save_percentage: goalie["savePct"],
+       time_on_ice: goalie["timeOnIce"],
+       goals_against_average: goalie["goalAgainstAverage"],
+       games: goalie["gamesPlayed"],
+       games_started: goalie["gamesStarted"],
+       shots_against: goalie["shotsAgainst"],
+       goals_against: goalie["goalsAgainst"]
+     )
+   end
+
+   response = RestClient.get("#{base_url}/goalie/savesByStrength?limit=-1&cayenneExp=seasonId=#{current_season}%20and%20gameTypeId=2")
+   parsed_response = JSON.parse(response)
+   goalies = parsed_response["data"]
+ 
+   goalies.each do |goalie|
+     GoalieStat.find_or_create_by(player_id: goalie["playerId"]).update(
+      power_play_save_percentage: goalie["powerPlaySavePercentage"],
+      short_handed_save_percentage: goalie["shortHandedSavePercentage"],
+      even_strength_save_percentage: goalie["evenStrengthSavePercentage"]
+     )
+   end
   p Time.now
 end
 
 puts "Seeding NHL Team Data..."
-get_nhl_teams("https://api.nhle.com/stats/rest/en/team", NHL_TEAMS)
+get_nhl_teams(BASE_URL, NHL_TEAMS)
 
 puts "Seeding NHL Roster Data..."
 get_nhl_rosters(SPECIFIC_URL, CURRENT_SEASON)
 
-# puts "Seeding Player Stats..."
-# get_player_stats()
+puts "Seeding Player Stats..."
+get_player_stats(BASE_URL, CURRENT_SEASON)
 
-# user_1 = User.create(username: "testuser", password_digest: BCrypt::Password.create("password"), email: "testuser")
+user_1 = User.create(username: "testuser", password_digest: BCrypt::Password.create("password"), email: "testuser")
 
-# team_1 = user_1.teams.create(name: "Test Team")
+team_1 = user_1.teams.create(name: "Test Team")
 
-# players = Player.where('full_name': ['Auston Matthews', 'Ivan Barbashev', 'Ryan Nugent-Hopkins', 'Jamie Benn', 'Mitchell Marner', 'Adrian Kempe', 'Erik Karlsson', 'Hampus Lindholm', 'Kris Letang', 'Adam Larsson', 'Elias Lindholm', 'Zach Hyman', 'Viktor Arvidsson', 'Phillipp Grubauer', 'Vitek Vanecek', 'Stuart Skinner'])
+players = Player.where('full_name': ['Auston Matthews', 'Ivan Barbashev', 'Ryan Nugent-Hopkins', 'Jamie Benn', 'Mitchell Marner', 'Adrian Kempe', 'Erik Karlsson', 'Hampus Lindholm', 'Kris Letang', 'Adam Larsson', 'Elias Lindholm', 'Zach Hyman', 'Viktor Arvidsson', 'Phillipp Grubauer', 'Vitek Vanecek', 'Stuart Skinner'])
 
-# team_1.players << players
+team_1.players << players
 
 puts "Done seeding!"
