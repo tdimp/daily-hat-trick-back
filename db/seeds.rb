@@ -79,7 +79,7 @@ def get_nhl_rosters(base_url, current_season)
         id: p["id"],
         first_name: p["firstName"]["default"],
         last_name: p["lastName"]["default"],
-        full_name: "#{p['firstName']} #{p['lastName']}",
+        full_name: "#{p['firstName']["default"]} #{p['lastName']["default"]}",
         position: p["positionCode"],
         jersey_number: p["sweaterNumber"],
         nhl_team_id: t["id"]
