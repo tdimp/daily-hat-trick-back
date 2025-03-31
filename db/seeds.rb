@@ -106,11 +106,12 @@ def get_player_stats(base_url, current_season)
       shots: skater["shots"],
       game_winning_goals: skater["gameWinningGoals"],
       shot_pct: skater["shotPct"],
-      faceoff_pct: skater["faceOffPct"],
-      games: skater["games"],
+      faceoff_pct: skater["faceOffWinPct"],
+      games: skater["gamesPlayed"],
       pim: skater["penaltyMinutes"],
-      power_play_goals: skater["powerPlayGoals"],
-      short_handed_points: skater["shortHandedPoints"],
+      power_play_goals: skater["ppGoals"],
+      power_play_points: skater["ppPoints"]
+      short_handed_points: skater["shPoints"],
     )
   end
 
@@ -155,7 +156,7 @@ def get_player_stats(base_url, current_season)
        saves: goalie["saves"],
        save_percentage: goalie["savePct"],
        time_on_ice: goalie["timeOnIce"],
-       goals_against_average: goalie["goalAgainstAverage"],
+       goals_against_average: goalie["goalsAgainstAverage"],
        games: goalie["gamesPlayed"],
        games_started: goalie["gamesStarted"],
        shots_against: goalie["shotsAgainst"],
