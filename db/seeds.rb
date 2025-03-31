@@ -110,7 +110,7 @@ def get_player_stats(base_url, current_season)
       games: skater["gamesPlayed"],
       pim: skater["penaltyMinutes"],
       power_play_goals: skater["ppGoals"],
-      power_play_points: skater["ppPoints"]
+      power_play_points: skater["ppPoints"],
       short_handed_points: skater["shPoints"],
     )
   end
