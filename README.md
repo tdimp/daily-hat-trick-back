@@ -17,7 +17,7 @@ Downloads and installs the app's dependencies.
 ### `rails db:create db:migrate db:seed`
 
 Starts the PostgreSQL database necessary for Daily Hat Trick
-Creates the database, runs the migrations, and seeds the database with NHL data from the [NHL Stats API](https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md)
+Creates the database, runs the migrations, and seeds the database with NHL data from the [NHL Stats API]([https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md](https://github.com/Zmalski/NHL-API-Reference)
 
 # IMPORTANT:
 
